@@ -12,3 +12,15 @@ cov(music[,7:8])
 cor(music[,7:8])
 ?cor
 plot(music[,7], music[,8], col = "red")
+A = matrix(c(1,2,2,5), 2, 2)
+A
+res = eigen(A)
+?eigen
+res$values[1]
+res$vectors[2,]
+?"%*%" 
+A %*% res$vector[,2]
+res$value[2] * res$vector[,2]
+B = matrix(c(17.7,20.3,20.3,24.4), 2, 2)
+eigen(B)
+diag(x=1, 2, 2)
