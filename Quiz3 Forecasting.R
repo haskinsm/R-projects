@@ -20,3 +20,47 @@ HoltWinters(beer,seasonal ="multiplicative" )$SSE
 HoltWinters(beer,seasonal ="additive" )$SSE
 plot(HoltWinters(beer,seasonal ="additive" )$fitted)  ##xhat is forecast, 
 plot(HoltWinters(beer,seasonal ="multiplicative" )$fitted)
+
+?pollution
+tsdisplay(pollution) ##Wont display image unless you make to plot window bigger
+tsdisplay(diff( pollution ))    ##Displays first order differentiation of polution timeseries and its ACF & PACF
+pollution 
+diff( pollution ) ##The diff function takes the value for february and subtracts it from January
+##Notice diff function missing value for Jan
+frequency(pollution) ##=12 as monthly data
+HoltWinters(pollution, seasonal = "additive") ##The function will let s=12
+HoltWinters(pollution, seasonal = "multiplicative") ##Get error message, 'Optimization  failure'
+##The functions HoltWinters uses for minimizing the SSE (setting the best values for alpha, beta, gamma), i.e. optimizing, fails
+?HoltWinters ##Need to use optim.start, set initial values and R will change these to a better selection of values
+HoltWinters(pollution, seasonal = "multiplicative", optim.start = c(alpha =0.3, beta = 0.1,
+                                                                    gamma=0.1))
+##Throws another error as is not able to move in the right direction of best values from that particular starting point
+HoltWinters(pollution, seasonal = "multiplicative", optim.start = c(alpha =0.5, beta = 0.5,
+                                                                    gamma=0.5))
+##Best to start in the middle by setting them all to 0.5 and optimize the SSE from there and finds a better value of gamma, beta, alpha
+
+tsdisplay(diff( airpass ), lag.max=100)   ##Displays more correlation coefficients
+ggtsdisplay(pollution)
+
+frequency(mink) ##=1 which indicates no stored data on freq.
+plot(mink)
+?mink
+##If you think it has a period of 10 can recats using ts function
+ts(mink, frequency = 10)
+HoltWinters(ts(mink, frequency = 10)) 
+##Need the dataset to have a timeseries when using HoltWinters, normally does
+##Have a stored value for frequency
+seasonplot(ts(mink, frequency = 10))
+decompose(ts(mink, frequency = 10))
+decompose(beer)
+
+k=5
+s=12
+Ln = HoltWinters(beer, seasonal ="multiplicative")$coefficients[1]
+bn = HoltWinters(beer, seasonal ="multiplicative")$coefficients[2]
+snk = HoltWinters(beer, seasonal ="multiplicative")$coefficients[7]
+(Ln+k*bn)*snk
+
+##The above code should be equal to:
+  predict(HoltWinters(beer, seasonal ="multiplicative"), n.ahead=5)[5]
+  
