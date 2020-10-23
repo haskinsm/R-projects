@@ -21,9 +21,9 @@ HoltWinters(beer,seasonal ="additive" )$SSE
 plot(HoltWinters(beer,seasonal ="additive" )$fitted)  ##xhat is forecast, 
 plot(HoltWinters(beer,seasonal ="multiplicative" )$fitted)
 
-?pollution
+?pollution ##Has trend and seems to have seasonality but hard to tell
 tsdisplay(pollution) ##Wont display image unless you make to plot window bigger
-tsdisplay(diff( pollution ))    ##Displays first order differentiation of polution timeseries and its ACF & PACF
+tsdisplay(diff( pollution )) ## diff to remove a trend  ##Displays first order differentiation of polution timeseries and its ACF & PACF
 pollution 
 diff( pollution ) ##The diff function takes the value for february and subtracts it from January
 ##Notice diff function missing value for Jan
@@ -64,3 +64,12 @@ snk = HoltWinters(beer, seasonal ="multiplicative")$coefficients[7]
 ##The above code should be equal to:
   predict(HoltWinters(beer, seasonal ="multiplicative"), n.ahead=5)[5]
   
+require(fma)
+?bank  
+tsdisplay(bank$EOM) ##Trend, no seasonality so would have to say DES
+tsdisplay(diff(bank$EOM))
+
+HoltWinters(bank$EOM,seasonal ="multiplicative" )$SSE
+HoltWinters(bank$EOM)$SSE
+HoltWinters(bank$EOM, gamma=FALSE)$SSE
+HoltWinters(bank$EOM, beta =FALSE, gamma=FALSE)$SSE
