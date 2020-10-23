@@ -67,9 +67,9 @@ snk = HoltWinters(beer, seasonal ="multiplicative")$coefficients[7]
 require(fma)
 ?bank  
 tsdisplay(bank$EOM) ##Trend, no seasonality so would have to say DES
-tsdisplay(diff(bank$EOM))
+tsdisplay(diff(bank$EOM)) ##After emoving trend still no clear seasonal components
 
 HoltWinters(bank$EOM,seasonal ="multiplicative" )$SSE
 HoltWinters(bank$EOM)$SSE
-HoltWinters(bank$EOM, gamma=FALSE)$SSE
-HoltWinters(bank$EOM, beta =FALSE, gamma=FALSE)$SSE
+HoltWinters(bank$EOM, gamma=FALSE)$SSE ##DES
+HoltWinters(bank$EOM, beta =FALSE, gamma=FALSE)$SSE ##SES
