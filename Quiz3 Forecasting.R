@@ -66,10 +66,12 @@ snk = HoltWinters(beer, seasonal ="multiplicative")$coefficients[7]
   
 require(fma)
 ?bank  
-tsdisplay(bank$EOM) ##Trend, no seasonality so would have to say DES
-tsdisplay(diff(bank$EOM)) ##After emoving trend still no clear seasonal components
+ggtsdisplay(bank$EOM, lag.max = 65) ##Trend, no seasonality so would have to say DES
+ggtsdisplay(diff(bank$EOM), lag.max = 65) ##After emoving trend still no clear seasonal components
 
-HoltWinters(bank$EOM,seasonal ="multiplicative" )$SSE
+HoltWinters(ts(bank$EOM,frequency=12),seasonal ="multiplicative" )$SSE
 HoltWinters(bank$EOM)$SSE
 HoltWinters(bank$EOM, gamma=FALSE)$SSE ##DES
 HoltWinters(bank$EOM, beta =FALSE, gamma=FALSE)$SSE ##SES
+?ets
+ets(bank$EOM)
