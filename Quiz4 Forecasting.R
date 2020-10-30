@@ -35,3 +35,18 @@ tsdisplay(arima.sim(n=63, list(ar= c(0.8897)), sd = sqrt(0.1796)))
 
 ##AR(2)
 tsdisplay(arima.sim(n=63, list(ar= c(0.8897, -0.4858)), sd = sqrt(0.1796)))
+
+
+##Actual Quiz5:
+?bricksq  ##Quarterly data so freq == 4
+bricksq
+seasonplot(bricksq)
+frequency(bricksq) ##Frequency == 4
+
+?HoltWinters
+HoltWinters(bricksq, optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5))$SSE ##Additive version, SHW+ better as lower SSE
+HoltWinters(bricksq, seasonal = "multiplicative", optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5))$SSE ##SHWx
+
+bricksq ##Can see from this the Q4 1994 will be the very next forecast, so let n=1
+predict(HoltWinters(bricksq, optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5) ), n.ahead=1)[1]
+
