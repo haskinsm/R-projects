@@ -44,9 +44,12 @@ seasonplot(bricksq)
 frequency(bricksq) ##Frequency == 4
 
 ?HoltWinters
-HoltWinters(bricksq, optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5))$SSE ##Additive version, SHW+ better as lower SSE
-HoltWinters(bricksq, seasonal = "multiplicative", optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5))$SSE ##SHWx
+HoltWinters(bricksq, optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5))$SSE ##SHW+
+HoltWinters(bricksq, seasonal = "multiplicative", optim.start = c(alpha=0.10, beta = 0.5, gamma = 0.5))$SSE ##SHWx
+
+##Originally had both optims starting at 0.5 all round and was indicating additive was the best
+##but get lower SSE for multpilicative version when start the optim at 0.1 for alpha
 
 bricksq ##Can see from this the Q4 1994 will be the very next forecast, so let n=1
-predict(HoltWinters(bricksq, optim.start = c(alpha=0.5, beta = 0.5, gamma = 0.5) ), n.ahead=1)[1]
+predict(HoltWinters(bricksq, seasonal = "multiplicative", optim.start = c(alpha=0.10, beta = 0.5, gamma = 0.5) ), n.ahead=1)[1]
 
