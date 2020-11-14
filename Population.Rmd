@@ -31,9 +31,31 @@ opts_knit$set(width=75)
 
 
 
-# Time series data
+# Introduction
 
-The   time series dataset (file [pop.csv](pop.csv) ) corresponds to several time series of population size for the UK till year 2018.
+The time series dataset (file [pop.csv](pop.csv) ) corresponds to several time series of population size for the UK till year 2018. In this report I will find the best Holt-Winters algorithms to predict the populations of England, Scotland, Northern Ireland and Wales (4 time series) for the years 2019 and 2020.
+
+This report will consist of 5 sections;
+
+ 1. England
+     
+ 2. Scotland
+    
+ 3. Northern Ireland
+    
+ 4. Wales
+ 
+ 5. Warnings about the accuracy of these forecasts
+     
+Note: Sections 1-4 will contain the following:
+
+ + Basic analysis of this time series 
+ 
+ + The appropriate Holt-Winters algorithm for this time series and  justification for its selection.
+ 
+ + Forecasts for 2019 and 2020.
+ 
+ 
 
 
 ## Reading the time series from a *.csv file
@@ -41,69 +63,223 @@ The   time series dataset (file [pop.csv](pop.csv) ) corresponds to several time
 
 
 ```{r message=FALSE}
-# make sure to type in Rstudio console: install.packages("fma")
 require("fma")
-require("knitr") # install package if not installed
-myts<-read.csv("pop.csv")
+require("knitr") 
+myts = read.csv("pop.csv")
 
 kable(myts)
 
 ```
 
+# England 
 
-
-## Example for visualisation 
-
-
+## Visualization of the time series
 ```{r message=FALSE }
 
-mytsScotland<-ts(myts$Scotland.population, start="1971",end="2018",frequency=1)
+mytsEngland<-ts(myts$England.population, start=1971,end=2018,frequency=1)
 
-tsdisplay(mytsScotland)
+ggtsdisplay(mytsEngland, lag.max = 47, main = "England population time series")
+```
+
+## Analysis of time series
+
+One can determine that there is a trend due to the upward slope of the time series and that there is no seasonal pattern visible due to the flat line of the time series and the fact there is no pattern visible in the PACF graph.
+
+## Appropriate Holt-Winters algorithm
+
+Since there is a trend and no seasonal pattern the Holt-Winters algorithms that are appropriate to use are the SES(Which can handle a small trend) or DES. 
+
+It is important to choose the Holt-Winters algorithm that has the lowest Sum of Square Error (SSE), as this will yield the most accurate forecasts. 
+
+```{r message=FALSE }
+##Below Code will yield the SSE of SES Holt-Winters Algorihtm
+SESSSE = HoltWinters(mytsEngland, beta = FALSE, gamma = FALSE)$SSE
+
+##Below Code will yield the SSE of DES Holt-Winters Algorihtm
+DESSSE = HoltWinters(mytsEngland, gamma = FALSE)$SSE
+
+if( SESSSE > DESSSE){
+  print("DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES")
+} else {
+  print("SES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than DES")
+}
+
+```
+
+## Forecasts for 2019 and 2020
+
+As was determined above DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.
+
+```{r message=FALSE }
+##Prediction for 2019 using DES
+predict(HoltWinters(mytsEngland, gamma = FALSE), n.ahead=1)[1]
+##Prediction for 2020 using DES
+predict(HoltWinters(mytsEngland, gamma = FALSE), n.ahead=2)[2]
 ```
 
 
 
-# Holt-Winters algorithms (20 Marks)
 
-**Find the best Holt-Winters algorithms to predict the populations of England, Scotland, Northern Ireland and Wales (4 time series) for the years  2019 and 2020.**
+# Scotland 
 
-* Write a brief report with R code and  comments  
-  + explaining  the methodology you have used to select the best algorithm for each time series (10 Marks).
-  + Compute the forecasts (2019 and 2020) for each of the 4 time series (5 Marks)
-  + With a maximum of 100 words, what warnings would you write to comment on  the accuracy of these forecasts (5 Marks). 
-  
-* Submit your report (html+Rmd, or pdf+R files)  in blackboard and also fill in (copy-paste) your answers in this [online form](https://forms.office.com/Pages/ResponsePage.aspx?id=jb6V1Qaz9EWAZJ5bgvvlK9aLUzeim5BDngtcfukjGHJUOFFTSjdTRTJWWlVFRTM0SlhFODZEN0U5Uy4u). 
+## Visualization of the time series
 
+```{r message=FALSE }
 
+mytsScotland<-ts(myts$Scotland.population, start=1971,end=2018,frequency=1)
 
-# Submission Format
+ggtsdisplay(mytsScotland,lag.max = 47, main = "Scotland population time series")
 
-For all students in the module with an email address of the form StudentName@tcd.ie
+##Diff to remove trend, as makes it easier to spot seasonal patterns
+ggtsdisplay( diff(mytsScotland),lag.max = 47, main = "Differentiated Scotland population time series" )
+```
 
+## Analysis of time series
 
-To be submitted on **Blackboard**: 
+One can determine that there is what appears to be a trend in the time series due to the upward slope of the time series plot and downward slope of the ACF graph.
 
-- 2 files named *StudentName.Rmd* and *StudentName.html*   
+It can also be determined that there is no seasonality in the time series as even when the trend is removed, by differentiating, it is still impossible to see anything resembling a seasonal pattern in the PACF graph.
 
-or (if Rmd does not work)
+## Appropriate Holt-Winters Algorithm 
 
-- 2 files named *StudentName.R* (code)  and *StudentName.pdf* (report)
+Since there is what appears to be a weak trend and no seasonal pattern the Holt-Winters algorithms that are appropriate to use are the SES(Which can handle a small trend) or DES. 
 
-An additional [online form](https://forms.office.com/Pages/ResponsePage.aspx?id=jb6V1Qaz9EWAZJ5bgvvlK9aLUzeim5BDngtcfukjGHJUOFFTSjdTRTJWWlVFRTM0SlhFODZEN0U5Uy4u) needs to be filled in as well with your answers.
-
-
-# Marking 
-
-The submission is marked :  
-
-- for correctness, 
-
-- quality of expression (e.g. R, English) and explanations provided.
-
-- brevity and clarity are  valued.    
-
-- and following the instructions.
+It is important to choose the Holt-Winters algorithm that has the lowest Sum of Square Error (SSE), as this will yield the most accurate forecasts.
 
 
+```{r message=FALSE }
+##Below Code will yield the SSE of SES Holt-Winters Algorihtm
+SESSSE = HoltWinters(mytsScotland, beta = FALSE, gamma = FALSE)$SSE
 
+##Below Code will yield the SSE of DES Holt-Winters Algorihtm
+DESSSE = HoltWinters(mytsScotland, gamma = FALSE)$SSE
+
+if( SESSSE > DESSSE){
+  print("DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES")
+} else {
+  print("SES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than DES")
+}
+
+```
+
+## Forecasts for 2019 and 2020
+
+As was determined above DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.
+
+```{r message=FALSE }
+##Prediction for 2019 using DES
+predict(HoltWinters(mytsScotland, gamma = FALSE), n.ahead=1)[1]
+##Prediction for 2020 using DES
+predict(HoltWinters(mytsScotland, gamma = FALSE), n.ahead=2)[2]
+```
+
+
+
+
+# Northern Ireland
+
+## Visualization of the time series
+```{r message=FALSE }
+
+mytsNorthernIreland<-ts(myts$Northern.Ireland.population, start=1971,end=2018,frequency=1)
+
+ggtsdisplay(mytsNorthernIreland, main = "Northern Ireland population time series", lag.max = 47)
+##Diff to remove trend, as makes it easier to spot seasonal patterns
+ggtsdisplay( diff(mytsNorthernIreland), main = "Differentiated Northern Ireland population time series", lag.max = 47 )
+```
+
+## Analysis of time series
+
+One can determine that there is a trend in the time series due to the upward slope of the time series plot and large slope of the ACF graph.
+
+It can also be determined that there is no seasonality in the time series as even when the trend is removed, by differentiating, it is still impossible to see anything resembling a seasonal pattern in the PACF graph.
+
+## Appropriate Holt-Winters Algorithm
+
+Since there is a trend and no seasonal pattern in the time series the Holt-Winters algorithms that are appropriate to use are the SES(Which can handle a small trend) or DES. 
+
+It is important to choose the Holt-Winters algorithm that has the lowest Sum of Square Error (SSE), as this will yield the most accurate forecasts.
+
+
+```{r message=FALSE }
+##Below Code will yield the SSE of SES Holt-Winters Algorihtm
+SESSSE = HoltWinters(mytsNorthernIreland, beta = FALSE, gamma = FALSE)$SSE
+
+##Below Code will yield the SSE of DES Holt-Winters Algorihtm
+DESSSE = HoltWinters(mytsNorthernIreland, gamma = FALSE)$SSE
+
+if( SESSSE > DESSSE){
+  print("DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.")
+} else {
+  print("SES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than DES.")
+}
+
+```
+
+## Forecasts for 2019 and 2020
+
+As was determined above DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.
+
+```{r message=FALSE }
+##Prediction for 2019 using DES
+predict(HoltWinters(mytsNorthernIreland, gamma = FALSE), n.ahead=1)[1]
+##Prediction for 2020 using DES
+predict(HoltWinters(mytsNorthernIreland, gamma = FALSE), n.ahead=2)[2]
+```
+
+# Wales 
+
+## Visualization of the time series
+```{r message=FALSE }
+
+mytsWales<-ts(myts$Wales.population, start=1971,end=2018,frequency=1)
+
+ggtsdisplay(mytsWales, lag.max = 47, main = "Wales population time series")
+##Diff to remove trend, as makes it easier to spot seasonal patterns
+ggtsdisplay( diff(mytsWales),lag.max = 47, main = "Differentiated Wales population time series" )
+```
+
+## Analysis of time series
+
+One can determine that there is a trend in the time series by looking at the time series plot and the ACF graph.
+
+It can also be determined that there is no seasonality in the time series as even when the trend is removed, by differentiating, it is still impossible to see anything resembling a seasonal pattern in the PACF graph.
+
+## Appropriate Holt-Winters Algorithm
+
+Since there is a trend and no seasonal pattern in the time series the Holt-Winters algorithms that are appropriate to use are the SES(Which can handle a small trend) or DES. 
+
+It is important to choose the Holt-Winters algorithm that has the lowest Sum of Square Error (SSE), as this will yield the most accurate forecasts.
+
+```{r message=FALSE }
+##Below Code will yield the SSE of SES Holt-Winters Algorihtm
+SESSSE = HoltWinters(mytsWales, beta = FALSE, gamma = FALSE)$SSE
+
+##Below Code will yield the SSE of DES Holt-Winters Algorihtm
+DESSSE = HoltWinters(mytsWales, gamma = FALSE)$SSE
+
+if( SESSSE > DESSSE){
+  print("DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.")
+} else {
+  print("SES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than DES.")
+}
+
+```
+
+## Forecasts for 2019 and 2020
+
+As was determined above DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.
+
+```{r message=FALSE }
+##Prediction for 2019 using DES
+predict(HoltWinters(mytsWales, gamma = FALSE), n.ahead=1)[1]
+##Prediction for 2020 using DES
+predict(HoltWinters(mytsWales, gamma = FALSE), n.ahead=2)[2]
+```
+
+
+# Warnings about the accuracy of the forecasts in this report
+
+## Government Policies
+
+## Unexpected Events

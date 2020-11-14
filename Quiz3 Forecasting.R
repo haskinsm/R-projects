@@ -74,3 +74,4 @@ HoltWinters(bank$EOM, gamma=FALSE)$SSE ##DES
 HoltWinters(bank$EOM, beta =FALSE, gamma=FALSE)$SSE ##SES
 ?ets
 ets(bank$EOM)
+
