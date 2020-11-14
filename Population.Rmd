@@ -1,0 +1,109 @@
+---
+title: "STU33010: Mid Term Assignment 2020"
+author: "Michael Haskins"
+date: "14/11/2020"
+output: 
+  rmdformats::readthedown:
+    lightbox: true
+    highlight: kate
+  
+   
+---
+
+```{r setup, include=FALSE,warning=FALSE, message=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=FALSE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+
+
+
+# Time series data
+
+The   time series dataset (file [pop.csv](pop.csv) ) corresponds to several time series of population size for the UK till year 2018.
+
+
+## Reading the time series from a *.csv file
+
+
+
+```{r message=FALSE}
+# make sure to type in Rstudio console: install.packages("fma")
+require("fma")
+require("knitr") # install package if not installed
+myts<-read.csv("pop.csv")
+
+kable(myts)
+
+```
+
+
+
+## Example for visualisation 
+
+
+```{r message=FALSE }
+
+mytsScotland<-ts(myts$Scotland.population, start="1971",end="2018",frequency=1)
+
+tsdisplay(mytsScotland)
+```
+
+
+
+# Holt-Winters algorithms (20 Marks)
+
+**Find the best Holt-Winters algorithms to predict the populations of England, Scotland, Northern Ireland and Wales (4 time series) for the years  2019 and 2020.**
+
+* Write a brief report with R code and  comments  
+  + explaining  the methodology you have used to select the best algorithm for each time series (10 Marks).
+  + Compute the forecasts (2019 and 2020) for each of the 4 time series (5 Marks)
+  + With a maximum of 100 words, what warnings would you write to comment on  the accuracy of these forecasts (5 Marks). 
+  
+* Submit your report (html+Rmd, or pdf+R files)  in blackboard and also fill in (copy-paste) your answers in this [online form](https://forms.office.com/Pages/ResponsePage.aspx?id=jb6V1Qaz9EWAZJ5bgvvlK9aLUzeim5BDngtcfukjGHJUOFFTSjdTRTJWWlVFRTM0SlhFODZEN0U5Uy4u). 
+
+
+
+# Submission Format
+
+For all students in the module with an email address of the form StudentName@tcd.ie
+
+
+To be submitted on **Blackboard**: 
+
+- 2 files named *StudentName.Rmd* and *StudentName.html*   
+
+or (if Rmd does not work)
+
+- 2 files named *StudentName.R* (code)  and *StudentName.pdf* (report)
+
+An additional [online form](https://forms.office.com/Pages/ResponsePage.aspx?id=jb6V1Qaz9EWAZJ5bgvvlK9aLUzeim5BDngtcfukjGHJUOFFTSjdTRTJWWlVFRTM0SlhFODZEN0U5Uy4u) needs to be filled in as well with your answers.
+
+
+# Marking 
+
+The submission is marked :  
+
+- for correctness, 
+
+- quality of expression (e.g. R, English) and explanations provided.
+
+- brevity and clarity are  valued.    
+
+- and following the instructions.
+
+
+
