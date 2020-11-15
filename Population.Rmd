@@ -58,7 +58,7 @@ Note: Sections 1-4 will contain the following:
  
 
 
-## Reading the time series from a *.csv file
+## The time series
 
 
 
@@ -79,11 +79,13 @@ kable(myts)
 mytsEngland<-ts(myts$England.population, start=1971,end=2018,frequency=1)
 
 ggtsdisplay(mytsEngland, lag.max = 47, main = "England population time series")
+##Diff to remove trend, as makes it easier to spot seasonal patterns
+ggtsdisplay( diff(mytsEngland),lag.max = 47, main = "Differentiated England population time series" )
 ```
 
 ## Analysis of time series
 
-One can determine that there is a trend due to the upward slope of the time series and that there is no seasonal pattern visible due to the flat line of the time series and the fact there is no pattern visible in the PACF graph.
+It can be determined that there is a trend due to the upward slope of the time series and that there is no seasonal pattern visible due to the straight line of the time series and also due to the fact there is no pattern visible in the PACF graph.
 
 ## Appropriate Holt-Winters algorithm
 
@@ -108,7 +110,7 @@ if( SESSSE > DESSSE){
 
 ## Forecasts for 2019 and 2020
 
-As was determined above DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES.
+As was determined above DES is the best Holt-Winters Algorithm for this time series, as it has lower SSE than SES, meaning the forecasts generated using DES will be more accurate than those of SES.
 
 ```{r message=FALSE }
 ##Prediction for 2019 using DES
@@ -132,17 +134,19 @@ ggtsdisplay(mytsScotland,lag.max = 47, main = "Scotland population time series")
 
 ##Diff to remove trend, as makes it easier to spot seasonal patterns
 ggtsdisplay( diff(mytsScotland),lag.max = 47, main = "Differentiated Scotland population time series" )
+
 ```
 
 ## Analysis of time series
 
-One can determine that there is what appears to be a trend in the time series due to the upward slope of the time series plot and downward slope of the ACF graph.
+There is a trend in this time series. We can see that the population was trending generally downward until 2003 and ever since its been on a strong upward trend. This is reflected in the ACF plot where we can see it is initially sloping downward and then when the lag is around 16 (Reflecting the trend turnaround in circa 2003) the trend reverses. Since the Holt-Winters algorithms place decreasing emphasis on older results more emphasis will be placed on the data that reflects the upward trend as this data is more recent so is more relevant.
 
 It can also be determined that there is no seasonality in the time series as even when the trend is removed, by differentiating, it is still impossible to see anything resembling a seasonal pattern in the PACF graph.
 
+
 ## Appropriate Holt-Winters Algorithm 
 
-Since there is what appears to be a weak trend and no seasonal pattern the Holt-Winters algorithms that are appropriate to use are the SES(Which can handle a small trend) or DES. 
+Since there is a trend and no seasonal pattern the Holt-Winters algorithms that are appropriate to use are the SES(Which can handle a small trend) or DES. 
 
 It is important to choose the Holt-Winters algorithm that has the lowest Sum of Square Error (SSE), as this will yield the most accurate forecasts.
 
@@ -190,9 +194,10 @@ ggtsdisplay( diff(mytsNorthernIreland), main = "Differentiated Northern Ireland 
 
 ## Analysis of time series
 
-One can determine that there is a trend in the time series due to the upward slope of the time series plot and large slope of the ACF graph.
+It can be determined that there is a consistent upward trend in the time series due to the slope of the plotted line of the time series being generally positive.
 
 It can also be determined that there is no seasonality in the time series as even when the trend is removed, by differentiating, it is still impossible to see anything resembling a seasonal pattern in the PACF graph.
+
 
 ## Appropriate Holt-Winters Algorithm
 
@@ -241,7 +246,7 @@ ggtsdisplay( diff(mytsWales),lag.max = 47, main = "Differentiated Wales populati
 
 ## Analysis of time series
 
-One can determine that there is a trend in the time series by looking at the time series plot and the ACF graph.
+It can be determined that there is a trend in the time series due to the upward slope of the plotted line of the time series and the ACF graph having a generally downward sloping line.
 
 It can also be determined that there is no seasonality in the time series as even when the trend is removed, by differentiating, it is still impossible to see anything resembling a seasonal pattern in the PACF graph.
 
@@ -280,6 +285,21 @@ predict(HoltWinters(mytsWales, gamma = FALSE), n.ahead=2)[2]
 
 # Warnings about the accuracy of the forecasts in this report
 
-## Government Policies
+It is important to remember that forecasts are rarely 100% accurate and their accuracy decreases the further into the future they are. The forecasts for 2019 and 2020 should be quite accurate as they are only one year and two years into the future. Below is a plot of the population forecasts for Wales. Note how wide the 95% and 80% confidence intervals are the further into the future the forecast. 
 
-## Unexpected Events
+```{r message=FALSE }
+## Light grey area is the 95% CI 
+## Blue area is the 80% CI 
+## The blue line is the plotted line of all the forecasts 
+  plot(forecast(HoltWinters(mytsWales, gamma = FALSE), h = 20), main = "Wales DES Holt-Winters Forecasts")
+```
+
+## External factors that can affect the forecasts
+Holt-Winters Algorithms only take into account previous years data and do not account for changes in any of the below external factors when calculating forecasts, changes in these external factors can greatly affect the accuracy of the forecasts.
+
+   * Government Policies can affect population, such as emigration/immigration polices and child benefit policies.
+   * Recessions/ Economic hardship typically result in population decreases.
+   * Unexpected Events
+      + War & Famine: Both result in decreases in populations.
+      + Diseases & Virus: Covid-19 has resulted in thousands of deaths across the UK, thus reducing the population, and has made forecasts less accurate as this is a new occurrence and the past data that has been used to create these forecasts was not subject to the affects of Covid-19 on the populations across the UK.
+      
