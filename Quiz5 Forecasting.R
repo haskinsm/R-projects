@@ -13,3 +13,5 @@ Arima(beer, order=c(2,0,0)) ##Number under ar1 and ar2 are R's best estimates fo
 forecast(Arima(dowjones, order = c(1,0,0)), h=1)
 plot(forecast(Arima(dowjones, order = c(1,0,0)), h=10))
 plot(forecast(Arima(dowjones, order = c(1,0,0)), h=1000)) ##Can see Conf. Intervals grow quickly and then appear to be bounded at far away predictions
+
+##
