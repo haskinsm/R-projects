@@ -3,11 +3,18 @@ title: "STU33010: Mid Term Assignment 2020"
 author: "Michael Haskins"
 date: "14/11/2020"
 output: 
-  rmdformats::readthedown:
+ ## pdf_document:
+ ##   number_sections: true
+ ##   df_print: kable
+
+## word_document
+
+ rmdformats::readthedown:
     lightbox: true
     highlight: kate
   
-   
+##fontsize: 11pt  
+##geometry: margin=1in  
 ---
 
 ```{r setup, include=FALSE,warning=FALSE, message=FALSE}
@@ -15,6 +22,7 @@ output:
 
 library(knitr)
 library(rmdformats)
+library(tinytex)
 
 ## Global options
 options(max.print="75")
