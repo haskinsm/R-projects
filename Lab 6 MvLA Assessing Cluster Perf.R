@@ -65,7 +65,8 @@ sum_agree
 (nrow(test) - sum_agree) / nrow(test)
 ## The inner command table(result, simT[index_test,3]) creates a table comparing the classification
 ## assigned to the test data by the k-nearest neighbour classifier against the true classification of the data.
-## The diag function selects the diagonal elements of the table, which is the number of points where knearest neighbour classification agrees with the true classification. The sum command simply adds these
+## The diag function selects the diagonal elements of the table, which is the number of points 
+## where knearest neighbour classification agrees with the true classification. The sum command simply adds these
 ## values together, and the remainder of the code ensures that the output that is returned is the percentage
 ## misclassification. 
 
@@ -86,7 +87,7 @@ k_summary[1:10, ]
 plot(k_summary[1:10,],  type = "b") 
 ?knn
 
-?knn.cv
+?knn.cv  ##Dont know how to do last part
 knn.cv(train, valid, k = 3)
 dim(train)
 dim(valid)
