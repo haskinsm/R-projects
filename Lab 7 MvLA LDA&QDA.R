@@ -77,3 +77,51 @@ sum_agree <- sum(diag(class_agree))
 sum_agree
 Perc_misclass = (nrow(stest) - sum_agree) / nrow(stest) ##0% misclassification
 Perc_misclass
+
+
+
+## Cross-Validation
+## Rather than splitting the data into training and test sets (or training, test, 
+## and validation sets when different models are being considered), an alternative technique 
+## for measuring the performance of the model is to perform cross-validation. 
+## For the lda function this is achieved by incorporating the argument CV=TRUE:
+  
+lsol_cv <- lda(salmon[,c(2,3)], grouping = salmon[, 1], CV = TRUE)
+lsol_cv
+  
+## In order to visualise the performance of LDA under cross-validation we can produce a plot 
+## of the following form:
+ plot(salmon[, c(2, 3)], col = as.factor(salmon[, 1]), pch = as.numeric(lsol_cv$class))
+## The above command plots the two numeric variables of the salmon data with colouring being 
+ ## determined by true classification and symbols being determined by the resulting classification 
+ ## of `leave-one-out’ LDA. How many misclassified points do you notice?  6 I think
+ 
+ ## Quadratic Discriminant Analysis
+ ## The function qda within the package MASS performs quadratic discriminant analysis. 
+ ## Remember the difference between QDA and LDA is that the former permits each group 
+ ## distribution to have its own covariance matrix, whilst the latter assumes a common 
+ ## covariance matrix for all group distributions. The usage of qda the same as lda:
+ 
+ qsol <- qda(strain[, c(2,3)], grouping = strain[, 1])
+ qsol
+ predict(qsol, stest[, c(2, 3)])
+## Again you will notice in an 80:20 training:testing split we have achieved 100% correct 
+ ## classification. The output returned from by qsol provides details of the prior probability 
+ ## of group membership (again determined by the proportion of data points classified in that 
+ ## group by default), and the mean vectors for each group. To find the covariances for the two 
+ ## groups enter the following:
+ cov (alaska_salmon) 
+ cov (canada_salmon)
+ 
+ ## ssess the performance of QDA for the salmon data set under cross-validation and produce a plot of your results.
+ qsolCV <- qda(salmon[, c(2,3)], grouping = salmon[, 1], CV = TRUE) ##CV = True => Cross Validation
+ qsolCV
+ salmon[, c(2, 3)]
+ class_agree = table(salmon[, c(1)], qsolCV$class) ##Seems like you dont need to use predict function with CV
+ sum_agree <- sum(diag(class_agree))
+ sum_agree
+ Perc_misclass = (nrow(salmon) - sum_agree) / nrow(salmon) ##0% misclassification
+ Perc_misclass ## 8% misclass
+ plot(salmon[, c(2, 3)], col = as.factor(salmon[, 1]), pch = as.numeric(qsolCV$class))
+ 
+
