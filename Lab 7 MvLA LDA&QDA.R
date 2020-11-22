@@ -157,4 +157,5 @@ lsol_cv
  sum_agree
  Perc_misclass = (nrow(Sal_acc) - sum_agree) / nrow(Sal_acc) ##0% misclassification
  Perc_misclass ##0%
+
  

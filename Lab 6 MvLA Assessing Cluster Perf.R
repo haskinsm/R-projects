@@ -84,12 +84,11 @@ for(i in 1:kmax){
   k_summary[i, 2] <- (ntest - sum_agree) / ntest
 }
 k_summary[1:10, ]
-plot(k_summary[1:10,],  type = "b") 
+plot(k_summary[1:10,],  type = "b")  ##Remember using random data so gonna change and be different to his
 ?knn
 
-?knn.cv  ##Dont know how to do last part
-knn.cv(train, valid, k = 3)
-dim(train)
-dim(valid)
-
-?train
+result_valtest = knn(train, valid, cl = simT[index_train, 3], k=5)
+table(result_valtest, simT[index_valid,3])
+class_agree <- table(result_valtest, simT[index_valid,3])
+sum_agree <- sum(diag(class_agree))
+(nrow(valid) - sum_agree) / nrow(valid)
