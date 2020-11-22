@@ -113,7 +113,7 @@ lsol_cv
  cov (alaska_salmon) 
  cov (canada_salmon)
  
- ## ssess the performance of QDA for the salmon data set under cross-validation and produce a plot of your results.
+ ## assess the performance of QDA for the salmon data set under cross-validation and produce a plot of your results.
  qsolCV <- qda(salmon[, c(2,3)], grouping = salmon[, 1], CV = TRUE) ##CV = True => Cross Validation
  qsolCV
  salmon[, c(2, 3)]
@@ -125,3 +125,36 @@ lsol_cv
  plot(salmon[, c(2, 3)], col = as.factor(salmon[, 1]), pch = as.numeric(qsolCV$class))
  
 
+##Compare the performance of LDA and QDA under a 50:25:25 training:validation:testing split of 
+ ## the salmon data set. This means you should use 50% of the data to train both models, 25% of 
+ ## the data to assess which model appears to be the better classifier, and a further 25% of the
+ ## data to more accurately assess the true classification rate of the better model.
+ Sal_train = salmon[c(1:25, 51:75), ] ## 25 + 25 = 50
+ Sal_test = salmon[c(26:38, 76:87), ] ## Cant split remaining 50 evenly-> test(13Alaskan, 12Canadian) 
+ Sal_acc = salmon[c(39:50, 88:100), ] ## acc(12Alaskan, 13Canadian) 
+ 
+ lda_sol = lda(Sal_train[, c(2, 3)], grouping = Sal_train[,1])
+ predict(lda_sol, Sal_test[, c(2, 3)])$class
+ class_agree = table(Sal_test[, c(1)], predict(lda_sol, Sal_test[, c(2, 3)])$class)
+ sum_agree <- sum(diag(class_agree))
+ sum_agree
+ Perc_misclass = (nrow(Sal_test) - sum_agree) / nrow(Sal_test) ##0% misclassification
+ Perc_misclass ##0%
+
+ qda_sol = qda(Sal_train[, c(2,3)], grouping = Sal_train[,1])
+ predict(qda_sol, Sal_test[, c(2,3)])$class
+ class_agree = table(Sal_test[, c(1)], predict(qda_sol, Sal_test[, c(2, 3)])$class)
+ sum_agree <- sum(diag(class_agree))
+ sum_agree
+ Perc_misclass = (nrow(Sal_test) - sum_agree) / nrow(Sal_test) ##0% misclassification
+ Perc_misclass ##4%
+ ##Im being lazy here copy and pasting so be careful to run right bits first
+ 
+ ##So lda appears to be better as it misclassifies 0% of the points.
+ predict(lda_sol, Sal_acc[, c(2, 3)])$class
+ class_agree = table(Sal_acc[, c(1)], predict(lda_sol, Sal_acc[, c(2, 3)])$class)
+ sum_agree <- sum(diag(class_agree))
+ sum_agree
+ Perc_misclass = (nrow(Sal_acc) - sum_agree) / nrow(Sal_acc) ##0% misclassification
+ Perc_misclass ##0%
+ 
