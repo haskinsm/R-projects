@@ -1,0 +1,95 @@
+---
+title: "MvLA Report 2020"
+author: "Michael Haskins"
+date: "28/11/2020"
+output: 
+ ## pdf_document:
+  ##number_sections: true
+ ##   df_print: kable
+
+## word_document
+
+ rmdformats::readthedown:
+    lightbox: true
+    highlight: kate
+
+##fontsize: 11pt  
+##geometry: margin=1in  
+---
+
+```{r setup, include=FALSE,warning=FALSE, message=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+library(rmdformats)
+library(tinytex)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=FALSE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+
+
+
+# Introduction
+
+The heart data set (file [heart_data.csv](heart_data.csv) ) consists of nine variables, each measuring different physiological characteristics of patients at risk of heart
+disease. Five variables are continuous, and three are binary. One variable,
+Slope, is ordinal, but will be treated as continuous. The tenth
+variable in the data set is Class, and this denotes whether heart disease is
+absent (1) or present (2). 
+
+This report will consist of two sections;
+
+   1. Cluster Analysis:
+      1. Identifying subsets present in the data
+      2. Identifying subsets at higher risk of heart disease
+   2. Classification:
+      1. Predicting the patients with heart disease
+    
+
+
+
+```{r message=FALSE, echo=FALSE}
+##May need to require certain packages here
+require("knitr") 
+heart = read.csv("heart_data.csv")
+
+```
+
+# Cluster Analysis
+
+## Identifying subsets present in the data
+
+Section Aim:
+
+  * To identify subsets of patients in the data set who have similar physiological characteristics. and determine if these subsets are at higher risk of heart disease.
+
+
+## Identifying subsets at higher risk of heart disease
+
+Section Aim: 
+
+  * To determine if any of the identified subsets are at higher risk of heart disease.
+
+```{r message=FALSE, echo=FALSE}
+## echo=FALSE hides the code in the pdf or html
+
+
+```
+
+# Classification
+
+## Predicting the patients with heart disease
+
+  Section Aim: 
+
+  * To provide accurate predictions of patients with heart disease.

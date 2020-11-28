@@ -15,7 +15,7 @@ tsdisplay(diff(dowjones))
 tsdisplay(Arima(dowjones, order = c(0,0,0))$residuals) ##Since everything else is zero equation reduces to: yt = c + episilont
 ##Since called the residuals bit, just displays the episilon values and ignores c (Look at y axis)
 ##Can see it has a trend
-tsdisplay(Arima(dowjones, order = c(0,1,0))$residuals) ## yt - yt-1 = xt = c + episilont
+tsdisplay(Arima(dowjones, order = c(0,1,0))$residuals) ## yt - yt-1 = xt = c + episilont ##C is the mean level
 ##Taking residuals so only getting episilont
 ## yt = yt-1 + c + +episilont      only have constant parameter c to estimate
 ## When you differntiate does not complicate at all or add more paramters to estimate
@@ -27,8 +27,15 @@ Arima(dowjones, order = c(2,0,0)) ## Log likelihood is the sum of square error i
 ## more explanatory variables sort of lowers the SSE
 ##But the more EVs the more complex the model, so introduce a penalty for complexity
 
-
+##Note have to use capital A Arima function not arima
 plot(forecast(Arima(dowjones,order=c(0,1,0),include.drift = TRUE),h=10)) ##means Phi0 is included in equationf ro yt
 ##yt = phi0 + yt-1 + episilont
 
-## Left off at 7mins
+plot(forecast(Arima(dowjones,order=c(0,1,0),include.drift = FALSE),h=10)) ## yt = yt-1 + episilont
+Arima(dowjones,order=c(0,1,0),include.drift = FALSE) ##Notice no coeff
+Arima(dowjones,order=c(0,1,0),include.drift = TRUE) ##Notice coeff
+plot(forecast(Arima(dowjones,order=c(0,1,0),include.drift = TRUE),h=10)) ##positive slop of the prediction is cause of the drift
+
+tsdisplay(Arima(dowjones, order = c(0,1,0), include.drift = TRUE)$residuals)  ##Equation that we fit is: yt = phi0 + yt-1 + episilont,
+## derivative of this is constant phi0, so predictions increase by phi0
+## so if phi0 greater than zero predictions will have positive slope
