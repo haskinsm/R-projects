@@ -6,27 +6,34 @@ install.packages("httr")
 library(httr)
 
 # Can be github, linkedin etc depending on application 
-oauth_endpoints("github") ## This sets the API we want to interrgogate as being GitHub
+##oauth_endpoints("github") ## This sets the API we want to interrgogate as being GitHub
 
-GitHubSENGMeasApp <- oauth_app(appname = "GitHub_SENG_Meas_App",
-                   key = "8758a6bf9a146e1da0c1",
-                   secret = "b9504edde46b794414495bd9c33ea28cbfd87824")
+GitHubSENGMeasApp <- oauth_app(appname = "SENG_Meas_App", ## My GitHub App Link: https://github.com/settings/applications/1429513
+                   key = "b9f9199e609b083310c1", ##Client ID of APP
+                   secret = "d3c7fe1b7ca7f782f82bc798f3cdab4c0c9e1e5b") ##Client secret genereated from the SENG_Meas_App page on GitHub
 
 # Get OAuth credentials
-github_token <- oauth2.0_token(oauth_endpoints("github"), myapp)
+github_token <- oauth2.0_token(oauth_endpoints("github"), GitHubSENGMeasApp)
 
 # Use API
 gtoken <- config(token = github_token)
-req <- GET("https://api.github.com/users/jtleek/repos", gtoken)
+APIResponse <- GET("https://api.github.com/users/phadej/repos", gtoken)
 
 # Take action on http error
-stop_for_status(req)
+stop_for_status(APIResponse)
 
 # Extract content from a request
-json1 = content(req)
+JSONData = content(APIResponse)
 
 # Convert to a data.frame
-gitDF = jsonlite::fromJSON(jsonlite::toJSON(json1))
+gitDataFrame = jsonlite::fromJSON(jsonlite::toJSON(JSONData))
 
 # Subset data.frame
-gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"] 
+gitDataFrame[gitDF$full_name == "phadej/datasharing", "created_at"] 
+
+data = fromJSON("https://api.github.com/users/phadej")
+data ##This will display all the info/data that is returned from the get request
+
+## Data can be easily accessed as is done below:
+data$public_repos
+data$followers
