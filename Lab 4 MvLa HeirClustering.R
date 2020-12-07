@@ -62,8 +62,7 @@ RecCutOffHeight = meanHeight + 3*sdHeight
 RecCutOffHeight ##Correct
 
 ##Code below adds the recommended cut off point
-plot(clust1)
-abline(h = 306.5752, lty=2, col=2)
+plot(clust1) + abline(h = 306.5752, lty=2, col=2)
 ##The abline command adds a line to an already existing plot. 
 ##The arguments lty and col specify line type and color of the line respectively.
 
