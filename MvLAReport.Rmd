@@ -3,15 +3,15 @@ title: "MvLA Report 2020"
 author: "Michael Haskins"
 date: "28/11/2020"
 output: 
- ## pdf_document:
-  ##number_sections: true
- ##   df_print: kable
+ pdf_document:
+ number_sections: true
+ df_print: kable
 
 ## word_document
 
- rmdformats::readthedown:
-    lightbox: true
-    highlight: kate
+ ##rmdformats::readthedown:
+  ##  lightbox: true
+  ##  highlight: kate
 
 ##fontsize: 11pt  
 ##geometry: margin=1in  
@@ -23,6 +23,7 @@ output:
 library(knitr)
 library(rmdformats)
 library(tinytex)
+library(fma)
 
 ## Global options
 options(max.print="75")
@@ -72,24 +73,305 @@ heart = read.csv("heart_data.csv")
 Section Aim:
 
   * To identify subsets of patients in the data set who have similar physiological characteristics. and determine if these subsets are at higher risk of heart disease.
+  
+###  Principal Component Analysis(PCA)
+
+  Principal Component Analysis(PCA) is a dimensionality-reduction method to reduce the number of variables of a data set, while preserving as much information as possible (trade a little accuracy for simplicity). Perfoming a PCA makes it easier to identify clusters/groups present in the data.
+  In PCA the most important component is 1 followed by 2 and so on. This is because the variance the components account for is listed in descreasing order from PC1 onwards.
+
+```{r message=FALSE, echo=FALSE}
+## echo=FALSE hides the code in the pdf or html
+allheart = data.matrix(heart[,1:10])
+heartobs = data.matrix(heart[,1:9])
+#heartobs
+
+##pcaunstand = prcomp(heartobs)
+#pcaunstand
+
+contvar = heartobs[,c(1,3,4,6,8,9)] ##Continuous vars
+#a = scale(contvar, scale = TRUE)
+#a
+#b = cbind(a, heartobs[,c(2,5,7)]) ## contains standardized cont var, and non standardized binary data
+#b
+#summary(prcomp(b))
+##summary(pcaunstand)
+##round(pcaunstand$rotation, 2)
+
+
+##pca_var_explain <- (pcaunstand$sdev^2) / (sum(pcaunstand$sdev^2))
+##plot(pca_var_explain, type = "b", main = "PCA of Heart data set",
+  ##  xlab = "No. of components", ylab = "Proportion of variance explained")
+
+##newheart <- predict(pcaunstand)
+##head(newheart, n = 5)
+
+##pairs(newheart[,1:4],col=allheart[,10])
+```
+
+I conducted a standardized PCA on this data set. The data has been standardized so that the variables with the highest variance do not dominate the PCA. If the data was not standardized the PCA would be completely dominated by the SerumCholestral varaible as this has the highest varaince (of 2671.467).
+Below is a graph showing the proportion of variance that can be explained by each principal component.
+
+```{r message=FALSE, echo=FALSE}
+
+pcastand = prcomp(heartobs, scale = TRUE)##Standardized PCA, uses cor matrix
+
+##summary(pcastand)
+##round(pcastand$rotation, 2)
+
+
+stand_var_explain <- (pcastand$sdev^2) / (sum(pcastand$sdev^2))
+plot(stand_var_explain, type = "b", main = "Standardized PCA of Heart data set",
+    xlab = "No. of components", ylab = "Proportion of variance explained")
+
+```
+
+Note that the proportion of variance accounted for by PC1 is very small (0.24). When the fifth PC is included the cumulative proportion of the variance of the dataset accounted for is only 0.73. This indicates that this dataset is not very suited to PCA. 
+
+The most influential variables in the standardized PCA for PC1 were MaxHeartRate and age. This is because their coefficients or 'loadings' (See below) in the PC1 vector have
+the largest magnitude. As they have different signs this indiactes that PC1 contrasts people who have a high MaxHeartRate and are of a young age. No further valuable insights can be gained from PCA due to its poor performance when applied to this dataset.
+```{r message=FALSE, echo=FALSE}
+
+round(pcastand$rotation, 2)
+
+```
+
+### Visually comparing the data
+
+Please see the below graphs comparing the continuous variables of the dataset.
+
+```{r message=FALSE, echo=FALSE}
+
+contvar = heartobs[,c(1,3,4,6,8,9)] ##Continuous vars
+pairs(contvar,col=allheart[,10], main = "Heart Data Continuous Variables (Red denotes Heart Disease present)")
+
+##Red denotes if heart disease is present
+##plot(heartobs[,6], col=allheart[,10]) ##Red has heart disease
+#pairs(newheart[,1:5],col=allheart[,10])
+
+```
+
+
+Not much can be learned from the graphs that are comparing the variables Age, RestBloodPressure and SerumCholestral to one another, but the graphs including the final 3 variables yield some interesting insights. Patients with a lower MaxHeartRate reading typically have heart disease and patients with high slope and MajorVessels readings appear to generally have heart disease. This will be discussed further later on in this report.
+
+
+### Heirarchical Clustering
+
+Hierarchical Clustering (HC) analysis groups similar observations into groups called clusters. This reveals group structure in the data. 
+
+Since this data set contains continuous and binary data the dissimilarity matrix I will be using is gower's general dissimilarity measure. This is the recommended dissimilarity measure to use when dealing with mixed data. The linkage method I used was complete linkage, I believe this linkage method is the best for this dataset as it will join the final clusters at a much larger measure of dissimilarity ensuring that there is good internal similarity in the clusters.
+
+A dendrogram, like the one seen below, is used to visually display the hierarchical relationships between observations. The observations that have been joined at the very bottom are most similar to one another, and then the further up in the graph the more disimilar the clusters are that are being joined.
+
+```{r message=FALSE, echo=FALSE, results = "hide"}
+##Need hide here as keeps outputting 0 to the console otherwise
+require(cluster)
+disheart = daisy(heartobs, metric = c("gower")) ##Gower method is used because of binary & cont variables
+clust1 = hclust(disheart, method = "complete")
+dis2 <- dist(heartobs, method="euclidean")
+clust2 = hclust(dis2, method = "complete")
+
+meanHeight = mean(clust1$height)
+sdHeight = sd(clust1$height)
+RecCutOffHeight = meanHeight + 3*sdHeight
+#RecCutOffHeight   ## is 0.4115239
+
+#par(mfrow=c(1,2))    # set the plotting area into a 1*2 array
+plot(clust1, main = "Cluster Dendogram (Dis= Gower, Linkage = Complete)", xlab = "Heart data disimilarity") + abline( RecCutOffHeight, b=0, col=2)
+#plot(clust2,  main = "Dis= euclidean, Linkage = Complete", xlab = "Heart data disimilarity")
+```
+
+The above dendogram describes the group structure present in the data. The height of the dendogram describes the dissimilarity (with respect to linkage method) between groups as they were clustered. The recommeneded cut off height, which is used for determining how many clusters/groups are present in the data set is h + 3sh, where h is the mean height at which groups are joined, and sh is the standard deviation of such heights. The recommended cut off height for this data set is 0.4115239, this is the organge line in the above plot. From this it can be determined that there are 8 clusters/groups in the dataset. 
+
+```{r message=FALSE, echo=FALSE}
+groups = cutree(clust1, h=RecCutOffHeight)
+test = cutree(clust1, k=2)
+#plot(allheart[,c(10)], col = test)
+
+
+palette(rainbow(10))
+plot(allheart[,c(6,10)], col = groups, main = "Class vs MaxHeartRate (Class = 2 ->Heart Disease Present)") ##Remember that 1 denotes heart dease absent
+palette("default")
+```
+
+Above is a visualization of max heart rate vs class. Each of the different coulours signify clusters which were obtained from the heirarchical clustering that was performed earlier in this report. Visually not much can be deduced from this, except that the cluster being represented by the green dot appears to generally have heart disease. 
+
+```{r message=FALSE, echo=FALSE}
+true_label <- as.numeric(heart$Class)
+#true_label
+#table(groups, true_label)
+#disease = heartobs[heart$Class == 2, ]
+table(groups, true_label)
+```
+
+In the above table we can see how many members of each of the 8 clusters have heart disease in the true_label second column and don't have heart disease by looking in the 
+true_label first column. From this we can see that the members of clusters 2 and 8 mainly do not have heart disease and the members of groups 3 and 7 have heart disease. It is not possible to gain any other useful insights from this table.
+
+The below calculated Rand Index will more precisely compute how accurately these clusters reflect the true group structure of the data.
+```{r message=FALSE, echo=FALSE}
+library("flexclust")
+#randIndex(test, true_label, correct = FALSE)
+#randIndex(test, true_label)
+randIndex(groups, true_label, correct = FALSE)
+randIndex(groups, true_label)
+```
+The Rand index can have a value between 0 and 1, with 0 indicating that the two data clusterings do not agree on any pair of points and 1 indicating that the data clusterings are exactly the same. 
+
+The heirarchical data clustering result (obtained from using Glover's dissimilairity measure, complete linkage and having 8 clusters) when compared to the true clusters classification of the data has a Rand Index score of 0.5408784. This Rand Index score was not calculated with respect to agreement by chance, so is therefore an unadjusted Rand Index.
+
+The adjusted Rand Index, which is calculated with respect to agreement by chance, is 0.08607804. This is a very low score and suggests there is little agreement between the clusters and the real data in terms of classifying the patients with heart disease. Therefore it is not clear from heirarchical data clustering what subsets of patients are at higher risk of heart disease.
+
 
 
 ## Identifying subsets at higher risk of heart disease
+
 
 Section Aim: 
 
   * To determine if any of the identified subsets are at higher risk of heart disease.
 
+Due to the poor performance of the PCA it is not possible to identify any subsets and thus impossible to accurately determine if any of the identified subsets in PCA are at higher risk of heart disease.
+
+The low Rand index scores which were calculated in Heirarchel Clustering analysis mean that there is little aggreement between the actual group structure of the data (i.e. group1 have heart disease & group2 don't) and the calculated eight clusters. It was shown above that the members of clusters 2 and 8 mainly do not have heart disease and the members of groups 3 and 7 have heart disease. The remaining clusters contain a mixture of patients who have and don't have heart disease, making it impossible to identify any common characteristics of patients who have heart disease from this analysis.
+
+
 ```{r message=FALSE, echo=FALSE}
-## echo=FALSE hides the code in the pdf or html
 
-
+#plot(heartobs[,8:9],col=allheart[,10], main = "MajorVessels vs Slope (Red denotes heart disease)")
+pairs(contvar[,4:6],col=allheart[,10], main = "Visual Insights (Red = Heart Disease present)")
+##summary(prcomp(contvar[,4:6], sacle = TRUE))
+##pairs(predict(prcomp(contvar[,4:6], sacle = TRUE)), col=allheart[,10])
 ```
 
+In this graph it is possible to see that patients with a MajorVessels reading of greater than or equal to two are likely to have heart disease, it is even more likely patients have heart disease if they have also recorded a reading under 140 for MaxHeartRate and a reading greater than 2 for Slope.
+
+
+
+
+
 # Classification
+
+The purpose of classification in this data set is to use the known data to determine if new samples have heart disease.
+
+I will not be standardizing the data for any of the following classification methods in order to ensure that the output is easily interpreted by a wide ranging audience. 
+For example, the group means from an unstandardized LDA are far more informative that those of a standardized LDA and easier to interpret for someone who doesn't have extensive knowledge of standardization (If this doesn't make sense now it will later on in this report).
 
 ## Predicting the patients with heart disease
 
   Section Aim: 
 
   * To provide accurate predictions of patients with heart disease.
+  
+### K-Nearest Neighbours (KNN)
+
+KNN classification is a non-parametric method of assigning group membership. It makes no assumption of the spread of the data within each class. The consequence of this is that it is not possible to measure uncertainty concerning any assignments.
+
+This method works by comparing an observation to the k nearest datapoints and assigning that observation to the cluster who contains the most of the k datapoints it is closest to. 
+
+Choosing a value for k is very important to this method. To decide on a value for K it is important to split the known data into a training, test and validation set. This will be done in the ratio of (50%, 25%, 25%). This is a common split, because if the training set is too large the results can look better than they actually are due to a lack of samples in the validation and testing sets. The training set is used to classify the 'unlabelled' points of the test set. The test set is used find the value of k that is best for classification and the validation set is used to estimate the classification error of the best k identified by the test set.
+
+I performed a KNN classification using only datapoints containing the variables MaxHeartRate, Slope and MajorVessels. I did this because earlier in this report I found these by visual inspection to be the most influential on whether a patient has heart disease. The best value of k, in terms of minimizing misclassification, was 2 which resulted in a miclassification rate of 27.94%. Although this is quite high, it means it is possible to make classification predictions for new datapoints with a misclassification rate of 27.94%.
+
+
+```{r message=FALSE, echo=FALSE}
+##Eval set to false as keeps changing best k whenever i run
+library(MASS)
+require(class) ##For knn -> K nearest neighbours
+#?knn
+#dim(heartobs) #270 obs
+#Tr = 50% = 135
+#Test = 25% = 67.5 =68
+#val = 67
+heartsubset = contvar[,c(4,5,6)]
+trainset = heartsubset[1:135,]
+testset = heartsubset[136:203,]
+valset = heartsubset[204:270,]
+#knn(trainset, testset, cl = allheart[1:135,10], k = 3)
+kmax <- 50
+k <- 1:kmax
+p <- rep(0, kmax)
+ntest <- nrow(testset)
+k_summary <- cbind(k, p)
+colnames(k_summary) <- c("Value of k  ","    The % misclassified")
+for(i in 1:kmax){
+  result <- knn(trainset, testset, cl = allheart[1:135,10], k = i)
+  class_agree <- table(result, allheart[136:203,10])
+  sum_agree <- sum(diag(class_agree))
+  k_summary[i, 2] <- (ntest - sum_agree) / ntest
+}
+```
+```{r message=FALSE, echo=FALSE}
+
+k_summary[1:10, ]
+plot(k_summary[1:10,],  type = "b", main = "Plot of misclassification with respect to k")
+##k=5 best  misclass = .3235294
+```
+
+If all the variables were to be included in the KNN classification it would result in a best value of k (in terms of minimizing misclassification) of 5 with a misclassification rate of 32.35%. Therefore it is possible to conclude that the three variables MaxHeartRate, Slope and MajorVessels are better at classifying new points than the whole dataset, as the lowest misclassification from that KNN classifcation was 27.94%.
+
+```{r message=FALSE, echo=FALSE}
+result_valtest = knn(trainset, valset, cl = allheart[1:135,10], k=2)
+class_agree <- table(result_valtest, allheart[204:270,10])
+sum_agree <- sum(diag(class_agree))
+MisclassificationRate = (nrow(valset) - sum_agree) / nrow(valset)
+```
+
+```{r message=FALSE, echo=FALSE}
+
+#MisclassificationRate
+```
+
+Since the value of k is chosen specifically for the test set it is important to check how well it performs when applied to another set (the validation set). The validation set can offer a more accurate estimate of the correct classifciation rate. The misclassifcation rate for the validation set was 26.87% (See output above). It is therefore possible to conclude that when examining only the three variables MaxHeartRate, Slope and MajorVessels we can correctly predict the classifcation (if they have heart disease or not) of new patients circa 74% of the time using KNN. 
+
+
+### Linear Discriminant Analysis (LDA)
+
+LDA and Quadratic Discriminant Analysis (QDA) are used if it is known or assumed that there is group structure in the data. In this data set there are two groups, those who have heart disease and those who don't.
+
+
+This type of analysis reveals structure in the data which then allows for the classification of future observations. This is done by using the characteristics of labelled data in order to classify the group membership of unlabelled data.
+
+Unlike KNN, both LDA & QDA assume the use of a distribution over the data. This then enables us to quantify the uncertainty over the structure of the data and we can consider the probability of group assignment (I.e. Is an observation highly likely to be part of the group it was assigned to or not).
+
+As there is a large number of variables in this dataset (9) this means the data set has a high dimension. In QDA the higher the dimension the more parameters that have 
+to be estimated (While in LDA the number of parameters is fixed). This can lead to high variance and so it is for this reason that I belive LDA is more suited to this data set.
+
+I split 75% of the data into a training set which will be subject to LDA. We can use the result to find the prior probabilities of an observation belonging to a group and the group means for each variable. The remaining 25% of the data has been split into a test set which will be used to determine how accurate classifications made using LDA were.
+
+Below are the prior probailities that an observation belongs to one of the groups, this is followed by the group means for each variable. From the group means, for example, we can determine that on average a person with heart disease has a MaxHeartRate recording of 138. This can be quite useful information.
+
+Note: Group 2 has heart disease and Group 1 does not.
+```{r message=FALSE, echo=FALSE}
+trainh = heartobs[1:203,]
+testh = heartobs[204:270,]
+mylda = lda(trainh, grouping = allheart[1:203,10])
+mylda$prior ##Group 2 is heart disease group
+mylda$means
+
+
+```
+
+The miclassification percentage for LDA was 20.9% (See below), this means that we can determine the correct classification (Whether they have heart disease or not) of a new patient cicra 80% of the time using LDA. This is an improvement on KNN's rate of circa 74%. 
+
+```{r message=FALSE, echo=FALSE}
+#predict(mylda, testh) ##To automatically predict the test data set enter:
+#predict(mylda, testh)$class ##Gets how the points were classified using knn
+class_agree = table(allheart[204:270, 10], predict(mylda, testh)$class)
+sum_agree <- sum(diag(class_agree))
+#sum_agree
+Perc_misclass = (nrow(testh) - sum_agree) / nrow(testh) ##0% misclassification
+Perc_misclass # 0.2089552
+
+```
+
+
+# Conclusion
+
+The principal component analysis performed in this report was not very informative when applied to this dataset due to a large number of Principal components being required to account for an acceptable level of variance.
+In the Heirarchical clustering analysis performed it was shown that the members of clusters 2 and 8 mainly do not have heart disease and the members of groups 3 and 7 have heart disease. The remaining clusters contain a mixture of patients who have and don't have heart disease, making it impossible to identify any common characteristics of patients who have heart disease from this analysis. In my opinion it would not be very useful to study the characteristics of cluster 2, for example, as it only accounts for a small fraction of the observations present in this dataset.
+
+It was shown that patients with a MajorVessels reading of greater than or equal to two are likely to have heart disease, it is even more likely patients have heart disease if they have also recorded a reading under 140 for MaxHeartRate and a reading greater than 2 for Slope. It was for this reason that these three variables were used in the KNN method in this report, which yielded a lower misclassification percentage than that of the KNN method which used all of the variables in the data set. By using this KNN method it is possible to correctly classify a patient circa 74% of the time.
+
+LDA was able to better this with a correct classification percentage of circa 80% (all of the variables were used in the performed LDA).
+
+Note: I did not standardize the data for KNN or LDA in order to ensure that the output is easily interpreted by a wide ranging audience. For example, the group means from an unstandardized LDA are far more informative that those of a standardized LDA and easier to interpret for someone who doesn't have extensive knowledge of standardization.
+
