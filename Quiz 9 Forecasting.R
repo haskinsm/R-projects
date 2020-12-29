@@ -39,6 +39,7 @@ Arima(beer,order=c(0,0,0),seasonal=c(1,0,0)) ## P=1 seasonal = c(P,D,Q), order=c
 ## Seasonality and trend
 tsdisplay(bricksq)
 Arima(bricksq,order=c(0,0,0),seasonal=c(1,0,0))
+tsdisplay(Arima(bricksq,order=c(0,0,0),seasonal=c(1,0,0))$residuals)
 ## Can see s=4 from output, 
 ## so has explanatory variable yt-4
 Arima(bricksq,order=c(0,1,0),seasonal=c(1,0,0))

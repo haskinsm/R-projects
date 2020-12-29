@@ -39,3 +39,17 @@ plot(forecast(Arima(dowjones,order=c(0,1,0),include.drift = TRUE),h=10)) ##posit
 tsdisplay(Arima(dowjones, order = c(0,1,0), include.drift = TRUE)$residuals)  ##Equation that we fit is: yt = phi0 + yt-1 + episilont,
 ## derivative of this is constant phi0, so predictions increase by phi0
 ## so if phi0 greater than zero predictions will have positive slope
+
+
+
+tsdisplay(Arima(dowjones, order=c(0,0,0))$residuals) ## Trend so set d=1
+tsdisplay(Arima(dowjones, order=c(0,1,0))$residuals) ## Stil; looks to be trend
+tsdisplay(Arima(dowjones, order=c(0,2,0))$residuals) ## Now looks like noise which is good
+## The time plot of the residuals looks better now as it looks like noise, and the mean accross time
+## seems to be well centered around 0 i.e. after 2nd order differencing the time series is appearing
+## stationary in mean.
+## Now looking at the ACF after the 2nd order differencing, I see a major peak at lag 1 then the
+## following ones get negligeable. Although major peaks also appears at lags11 to 17, I decided to
+## try the MA(1) :
+tsdisplay(Arima(dowjones, order=c(0,2,1))$residuals)
+  
