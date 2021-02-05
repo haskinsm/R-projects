@@ -1,3 +1,4 @@
+##Below are packages necessary for program:
 install.packages("jsonlite")
 library(jsonlite)
 install.packages("httpuv")
@@ -32,8 +33,8 @@ gitDataFrame = jsonlite::fromJSON(jsonlite::toJSON(JSONData))
 gitDataFrame[gitDF$full_name == "phadej/datasharing", "created_at"] 
 
 data = fromJSON("https://api.github.com/users/phadej")
-data ##This will display all the info/data that is returned from the get request
+data ## This will display all the info/data that is returned from the get request
 
-## Data can be easily accessed as is done below:
+## Data can be easily accessed as is done below: 
 data$public_repos
 data$followers
