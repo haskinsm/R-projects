@@ -5,6 +5,7 @@ EUData = read.csv(file = "Lab 2 - EU_20190102.txt", header = TRUE)
 ?read.table
 USData = read.csv(file = "Lab 2 - US_2019_02_01.txt", header = TRUE, sep = ";")
 
+## subsetting data :
 EU_cust_30_50 = subset( EUData, (age >= 30) & (age <= 50))
 write.table(EU_cust_30_50, file = "EU_cust_30_50.csv", row.names = FALSE, sep = ",")
 
@@ -14,6 +15,7 @@ write.table(EU_cust_ter_se_enter, file = "EU_cust_ter_se_enter.csv", row.names =
 
 
 ############################## PART 2 ################################
+## Dividing the dataset into occupationsa and then saving these as individual datasets called <occupation>.csv:
 ?levels
 levels( EUData[ ,2])
 for( occupation in levels( EUData[ ,2])){  ## occupation will be admin. on first iteration then blue-collar and so on
@@ -29,6 +31,8 @@ for( occupation in levels( EUData[ ,2])){  ## occupation will be admin. on first
 }
 
 ############################# PART 3 ################################
+## Making 2 datasets ready to merge:
+
 # [Assume the Euro/Dollar conversion rate is 1 US Dollar = 0.87  Euro]
 EUAmmended = EUData
 USAmmended = USData
