@@ -88,7 +88,7 @@ prop.table(X) # To get proportions in each category
 sstats <- iris
 summary(sstats)
 # install.packages("psych")
-library("psych")
+library("psych") ## Need it for describeBy
 describeBy(sstats$Sepal.Length, sstats$Species) # Descriptive statistics by group
 species_tab <- table(sstats$Species)
 prop.table(species_tab) ## Gives you proportion of each species
@@ -141,3 +141,9 @@ hist(sstats$Sepal.Length)
 hist(sstats$Sepal.Width)
 barplot(species_tab)
 pie(species_tab)
+
+library(ggplot2)
+ggplot(data=iris, aes(x=Sepal.Length, fill=Species)) +
+  geom_density(alpha=0.5) +
+  xlim(3.9,8.5) +
+  theme_minimal()
