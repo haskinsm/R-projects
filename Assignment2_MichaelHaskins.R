@@ -1,3 +1,6 @@
+## Levels function is very useful
+ ## Note: levels function will not work if using it on a character vector. levels( charVector ) will result in NULL, if dealing with a char vector use unique( charVector ) instead
+## Should prob use write.csv
 
 ############################ PART 1 ##############################
 
@@ -10,7 +13,10 @@ EU_cust_30_50 = subset( EUData, (age >= 30) & (age <= 50))
 write.table(EU_cust_30_50, file = "EU_cust_30_50.csv", row.names = FALSE, sep = ",")
 
 EU_cust_ter_se_enter = subset( EUData, (education == "tertiary") & ((job == "self-employed") | (job == "entrepreneur")))
-write.table(EU_cust_ter_se_enter, file = "EU_cust_ter_se_enter.csv", row.names = FALSE, sep = ",") ##Files stored in WD folder
+write.table(EU_cust_ter_se_enter, file = "EU_cust_ter_se_enter.csv", row.names = FALSE, sep = ",") ##Files stored in WD folder. Note she used write.csv
+
+## Check if worked correctly by:
+table( EU_cust_ter_se_enter$job, EU_cust_ter_se_enter$education ) ## Can see it has worked correctly
 ?write.table
 
 
@@ -22,12 +28,12 @@ for( occupation in levels( EUData[ ,2])){  ## occupation will be admin. on first
  # print(occupation)
   DataFrame = subset(EUData, job == occupation)
   if( occupation == "admin."){
-    ?substr
-    # substr("admin.", 0, 5) # Results in admin
-    write.table(DataFrame, file = paste(  substr("admin.", 0, 5) , ".csv", sep = ""))
-  } else {
-    write.table(DataFrame, file = paste(occupation, ".csv", sep = ""))
-  }
+     ?substr
+     # substr("admin.", 0, 5) # Results in admin
+     write.table(DataFrame, file = paste(  substr("admin.", 0, 5) , ".csv", sep = ""))
+   } else {
+     write.table(DataFrame, file = paste(occupation, ".csv", sep = ""))
+   }
 }
 
 ############################# PART 3 ################################

@@ -25,11 +25,12 @@ for( i in 1:100){ ## For loop that will run 100 times
   randomFactInd = sample( 1:2, size=1, replace=TRUE) ## randomindex generator for fact vector
   
   if( randomInd == 1){ ## IF true proceed to random shark fact
-    answerString = paste('Did you know that a', animals[randomInd], sharkF[randomFactInd] ) ## Merges strings and stors them in answer String which will later be printed
+    answerString = paste('Did you know that a ', animals[randomInd], ' ', sharkF[randomFactInd], '?', sep = "" ) ## Merges strings and stors them in answer String which will later be printed
   } else if( randomInd == 2){ ## If true proceed to random whale fact
-    answerString = paste('Did you know that a', animals[randomInd], whaleF[randomFactInd] )
+    answerString = paste('Did you know that a ', animals[randomInd], ' ', whaleF[randomFactInd], '?', sep = "" )
   } else if( randomInd == 3){ ## If true proceed to random stingray fact
-    answerString = paste('Did you know that a', animals[randomInd], StingrayF[randomFactInd] )
+    answerString = paste('Did you know that a ', animals[randomInd], ' ', StingrayF[randomFactInd], '?', sep = "")
   }
   cat(answerString, "\n") ##Answer String printed and move to next line
 }
+
