@@ -27,3 +27,5 @@ plot(model1, what = "BIC")
 plot(model1, what = "uncertainty")
 
 uncerPlot(model1$z) ## This works better for other data 
+
+summary(model1, parameters=TRUE) ## Gives a much more detailed summary and lists for example the means of group 1 and 2 for diff vars
