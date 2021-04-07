@@ -22,6 +22,7 @@ library(arm)
 ## Binnned residual plot:
 # After dividing the data into categories (bins) based on their fitted values, 
 # the average residual versus the average fitted vaue for each bin
+?binnedplot
 binnedplot(fitted(bin_model2),
            residuals(bin_model2, type = "response"),
            nclass = NULL,
