@@ -97,10 +97,14 @@ table(cleanData$Pedu, cleanData$FinalGrade)
 
 
 ########  Create a correlation heatmap #########
-library(ggplot2)
+# Src #https://stackoverflow.com/questions/52554336/plot-the-equivalent-of-correlation-matrix-for-factors-categorical-data-and-mi
+
+#library(ggplot2)
 library(tidyverse)
 # install.packages("lsr")
 library(lsr)
+library(dplyr)
+#### Make sure MASS project is not loaded ######################
 
 # function to get chi square p value and Cramers V
 f = function(x,y) {
@@ -111,7 +115,7 @@ f = function(x,y) {
 
 # create unique combinations of column names
 # sorting will help getting a better plot (upper triangular)
-cleanDataComb = data.frame(t(combn(sort(names(cleanData)), 2)), stringsAsFactors = F)
+cleanDataComb = data.frame(t(combn(sort(names(cleanData)), 2)), stringsAsFactors = F) 
 
 # apply function to each variable combination
 cleanDataRes = map2_df(cleanDataComb$X1, cleanDataComb$X2, f)
