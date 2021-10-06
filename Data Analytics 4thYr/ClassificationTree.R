@@ -11,7 +11,7 @@ Data <- read.csv("Data Analytics 4thYr/Data/DT-Credit.csv", header=TRUE, sep= ";
 str(Data)  # str() is used for compactly displaying the internal structure of a R object
 Data <- Data[,-1] # Remove 1st column of data
 str(Data) 
-attach(Data) #used to access the variables present in the data framework without calling the data frame.
+attach(Data) #used to access the variables present in the data framework without calling the data frame. *Remember to use detach(<Data>) when finished
 
 
 ########## Buidling Decision Tree Model #################
